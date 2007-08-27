@@ -1,0 +1,75 @@
+<TMPL_INCLUDE NAME="header.tmpl">
+
+<script type="text/javascript">
+function onChangeAuthors (obj) {
+	var selected = obj.options[obj.selectedIndex];
+	if (selected)
+		location.href = '?__mode=config&author_id=' + selected.value;
+}
+</script>
+
+<TMPL_INCLUDE NAME="tab.inc.tmpl">
+
+<TMPL_UNLESS NAME=IS_ADMIN_USER>
+<p>
+  <MT_TRANS phrase="Permission denied">
+</p>
+<TMPL_ELSE><!--IS_SUPER_USER-->
+<p>
+  <TMPL_VAR NAME=BASIC_SELECT_FIELD_DESC>
+</p>
+
+<MT_TRANS phrase="authors">:
+<select name="authors" onchange="onChangeAuthors(this);">
+<TMPL_LOOP NAME=AUTHORS>
+  <option value="<TMPL_VAR NAME=ID>"<TMPL_IF NAME=SELECTED> selected</TMPL_IF>><TMPL_VAR NAME=NAME ESCAPE=HTML></option>
+</TMPL_LOOP><!--AUTHORS-->
+</select><!--authors-->
+
+<TMPL_IF NAME=BLOGS>
+<form method="post"><fieldset>
+<input type="hidden" name="__mode" value="config_save" />
+<input type="hidden" name="author_id" value="<TMPL_VAR NAME=AUTHORID>" />
+
+<p><TMPL_VAR NAME=CHECK_CATEGORY_THIS_USER_CAN_POST><br />
+<a href="<TMPL_VAR NAME=SCRIPT_URL>?__mode=edit_permissions&author_id=<TMPL_VAR NAME=AUTHORID>"><MT_TRANS phrase="Author Permissions"><MT_TRANS phrase="Settings"></a>
+</p>
+
+<div class="list" id="list-blog">
+<table cellspacing="0">
+<TMPL_LOOP NAME=BLOGS>
+  <tr>
+    <th></th>
+    <th><MT_TRANS phrase="Weblog Name"> : <TMPL_VAR NAME=NAME></th>
+    <th><MT_TRANS phrase="Description"></th>
+  </tr>
+<TMPL_IF NAME=CATEGORY>
+<TMPL_LOOP NAME=CATEGORY>
+  <tr class="<TMPL_IF ODD>odd<TMPL_ELSE>even</TMPL_IF>">
+    <td class="cb"><input type="checkbox" name="<TMPL_VAR NAME=BLOG_ID>_<TMPL_VAR NAME=ID>"<TMPL_IF NAME=CHECKED> checked</TMPL_IF> /></td>
+    <td><TMPL_VAR NAME=LABEL></td>
+    <td><TMPL_VAR NAME=DESCRIPTION></td>
+  </tr>
+</TMPL_LOOP><!--CATEGORY-->
+<TMPL_ELSE><!--CATEGORY-->
+  <tr>
+    <td></td>
+    <td colspan="2"><MT_TRANS phrase="Categories must exist within the same blog"></td>
+  </tr>
+</TMPL_IF><!--CATEGORY-->
+</TMPL_LOOP><!--BLOGS-->
+</table>
+</div><!--list-blog-->
+
+<div class="list-actions">
+  <div class="button-bar">
+    <input type="submit" value="<MT_TRANS phrase="Save Changes">">
+  </div>
+</div>
+</fieldset></form>
+<TMPL_ELSE><!--BLOGS-->
+<MT_TRANS phrase="You do not have entry creation permission for any weblogs on this installation. Please contact your system administrator for access.">
+</TMPL_IF><!--BLOGS-->
+</TMPL_UNLESS><!--IS_SUPER_USER-->
+
+<TMPL_INCLUDE NAME="footer.tmpl">
